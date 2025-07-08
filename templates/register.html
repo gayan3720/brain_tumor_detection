@@ -1,0 +1,473 @@
+{% extends "base.html" %}
+{% block title %}Register | NeuroScan AI{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-dark: #3a56d4;
+        --secondary: #7209b7;
+        --light-bg: #f0f7ff;
+        --dark-text: #2b2d42;
+        --card-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        --success: #4ade80;
+        --error: #f87171;
+    }
+
+    .register-container {
+        max-width: 600px;
+        margin: 5rem auto;
+        padding: 0 1.5rem;
+    }
+
+    .register-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .register-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .register-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .register-icon {
+        font-size: 3.5rem;
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+
+    .register-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark-text);
+    }
+
+    .register-subtitle {
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.8rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        color: var(--dark-text);
+        font-size: 1.05rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.9rem 1.2rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: var(--transition);
+        background: #f8fafc;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        outline: none;
+        background: white;
+    }
+
+    .btn-primary {
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        width: 100%;
+        transition: var(--transition);
+        cursor: pointer;
+        box-shadow: 0 7px 20px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
+    }
+
+    .btn-primary:active {
+        transform: translateY(1px);
+    }
+
+    .login-text {
+        text-align: center;
+        margin-top: 2rem;
+        color: #6c757d;
+        font-size: 1rem;
+    }
+
+    .login-link {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .login-link:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    .password-container {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #94a3b8;
+        z-index: 10;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 1.8rem 0;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .divider-text {
+        padding: 0 1rem;
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .toast-container {
+        position: relative;
+        margin-bottom: 1.5rem;
+        z-index: 10;
+    }
+
+    .toast-message {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        border-left: 4px solid var(--primary);
+        transition: var(--transition);
+    }
+
+    .toast-message.success {
+        border-left-color: var(--success);
+    }
+
+    .toast-message.error {
+        border-left-color: var(--error);
+    }
+
+    .toast-icon {
+        font-size: 1.5rem;
+        margin-right: 1rem;
+    }
+
+    .toast-content {
+        flex: 1;
+    }
+
+    .toast-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #94a3b8;
+        padding: 0;
+        margin-left: 0.5rem;
+    }
+
+    .error-message {
+        color: var(--error);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: none;
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -10px;
+        margin-left: -10px;
+    }
+
+    .form-col {
+        padding-right: 10px;
+        padding-left: 10px;
+        flex: 1 0 0%;
+    }
+
+    .terms-container {
+        display: flex;
+        align-items: flex-start;
+        margin-top: -0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .terms-checkbox {
+        margin-top: 0.3rem;
+        margin-right: 0.75rem;
+    }
+
+    .terms-label {
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+
+    @media (max-width: 768px) {
+        .register-container {
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+
+        .register-card {
+            padding: 2rem;
+        }
+
+        .register-title {
+            font-size: 1.8rem;
+        }
+
+        .form-row {
+            flex-direction: column;
+        }
+
+        .form-col {
+            width: 100%;
+            padding: 0;
+        }
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <div class="register-icon">
+                <i class="bi bi-person-plus"></i>
+            </div>
+            <h2 class="register-title">Create Your Account</h2>
+            <p class="register-subtitle">Join NeuroScan AI to unlock powerful insights</p>
+        </div>
+
+        <!-- Toast container for flash messages -->
+        <div id="toast-container" class="toast-container">
+            {% with messages = get_flashed_messages() %}
+                {% for message in messages %}
+                    <div class="toast-message {% if 'success' in message|lower %}success{% elif 'error' in message|lower %}error{% endif %}">
+                        <i class="bi
+                            {% if 'success' in message|lower %}bi-check-circle toast-icon{% elif 'error' in message|lower %}bi-exclamation-circle toast-icon{% else %}bi-info-circle toast-icon{% endif %}"></i>
+                        <div class="toast-content">{{ message }}</div>
+                        <button class="toast-close">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endwith %}
+        </div>
+
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username</label>
+                        <div class="input-group">
+                            {{ form.username(id="username", class="form-control", placeholder="Choose a username", required=True) }}
+                            <ul class="error-messages" id="username-errors">
+                                {% for error in form.username.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <div class="input-group">
+                            {{ form.email(id="email", class="form-control", placeholder="your@email.com", required=True) }}
+                            <ul class="error-messages" id="email-errors">
+                                {% for error in form.email.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <div class="password-container">
+                            {{ form.password(id="password", class="form-control", placeholder="Create password", required=True) }}
+                            <span class="toggle-password" id="togglePassword">
+                                <i class="bi bi-eye"></i>
+                            </span>
+                            <ul class="error-messages" id="password-errors">
+                                {% for error in form.password.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label class="form-label" for="confirm_password">Confirm Password</label>
+                        <div class="password-container">
+                            {{ form.confirm_password(id="confirm_password", class="form-control", placeholder="Confirm password", required=True) }}
+                            <span class="toggle-password" id="toggleConfirmPassword">
+                                <i class="bi bi-eye"></i>
+                            </span>
+                            <ul class="error-messages" id="confirm_password-errors">
+                                {% for error in form.confirm_password.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label class="form-label" for="age">Age</label>
+                        {{ form.age(id="age", class="form-control", placeholder="Your age", required=True) }}
+                        <ul class="error-messages" id="age-errors">
+                            {% for error in form.age.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label class="form-label" for="sex">Gender</label>
+                        {{ form.sex(id="sex", class="form-control", required=True) }}
+                        <ul class="error-messages" id="sex-errors">
+                            {% for error in form.sex.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="terms-container">
+                <input type="checkbox" class="terms-checkbox" id="terms" required>
+                <label class="terms-label" for="terms">
+                    I agree to the <a href="#" class="login-link">Terms of Service</a> and <a href="#" class="login-link">Privacy Policy</a>
+                </label>
+            </div>
+
+            <div class="form-group">
+                {{ form.submit(class="btn-primary") }}
+            </div>
+
+            <div class="divider">
+                <span class="divider-text">OR</span>
+            </div>
+
+            <p class="login-text">
+                Already have an account? <a href="{{ url_for('login') }}" class="login-link">Login here</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password toggle functionality
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+
+        if (togglePassword) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+            });
+        }
+
+        if (toggleConfirmPassword) {
+            toggleConfirmPassword.addEventListener('click', function() {
+                const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPasswordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+            });
+        }
+
+        // Close toast messages
+        document.querySelectorAll('.toast-close').forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.toast-message').style.opacity = '0';
+                setTimeout(() => {
+                    this.closest('.toast-message').remove();
+                }, 300);
+            });
+        });
+
+        // Auto fade out toast messages after 8 seconds
+        document.querySelectorAll('.toast-message').forEach(toast => {
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 8000);
+        });
+
+        // Input error clearing
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                const errorElement = document.getElementById(input.id + '-errors');
+                if (errorElement) {
+                    errorElement.innerHTML = '';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

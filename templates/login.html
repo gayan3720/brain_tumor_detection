@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% block title %}Login | NeuroScan AI{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-dark: #3a56d4;
+        --secondary: #7209b7;
+        --light-bg: #f0f7ff;
+        --dark-text: #2b2d42;
+        --card-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    .login-container {
+        max-width: 500px;
+        margin: 5rem auto;
+        padding: 0 1.5rem;
+    }
+    
+    .login-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition);
+    }
+    
+    .login-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    }
+    
+    .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .login-icon {
+        font-size: 3.5rem;
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+    
+    .login-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark-text);
+    }
+    
+    .login-subtitle {
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.8rem;
+    }
+    
+    .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        color: var(--dark-text);
+        font-size: 1.05rem;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.9rem 1.2rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: var(--transition);
+        background: #f8fafc;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        outline: none;
+        background: white;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        width: 100%;
+        transition: var(--transition);
+        cursor: pointer;
+        box-shadow: 0 7px 20px rgba(67, 97, 238, 0.3);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
+    }
+    
+    .btn-primary:active {
+        transform: translateY(1px);
+    }
+    
+    .register-text {
+        text-align: center;
+        margin-top: 2rem;
+        color: #6c757d;
+        font-size: 1rem;
+    }
+    
+    .register-link {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+    
+    .register-link:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+    
+    .password-container {
+        position: relative;
+    }
+    
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #94a3b8;
+    }
+    
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 1.8rem 0;
+    }
+    
+    .divider::before,
+    .divider::after {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .divider-text {
+        padding: 0 1rem;
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+        .login-container {
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+        
+        .login-card {
+            padding: 2rem;
+        }
+        
+        .login-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+            <h2 class="login-title">Welcome Back</h2>
+            <p class="login-subtitle">Sign in to access NeuroScan AI</p>
+        </div>
+        
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                <label class="form-label" for="username">Username</label>
+                {{ form.username(id="username", class="form-control", placeholder="Enter your username", required=True) }}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="password-container">
+                    {{ form.password(id="password", class="form-control", placeholder="Enter your password", required=True) }}
+                    <span class="toggle-password" id="togglePassword">
+                        <i class="bi bi-eye"></i>
+                    </span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                {{ form.submit(class="btn-primary") }}
+            </div>
+            
+            <div class="divider">
+                <span class="divider-text">OR</span>
+            </div>
+            
+            <p class="register-text">
+                Don't have an account? <a href="{{ url_for('register') }}" class="register-link">Register here</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle eye icon
+            if (type === 'password') {
+                this.innerHTML = '<i class="bi bi-eye"></i>';
+            } else {
+                this.innerHTML = '<i class="bi bi-eye-slash"></i>';
+            }
+        });
+    });
+</script>
+{% endblock %}

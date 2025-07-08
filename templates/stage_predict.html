@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Tumor Stage Prediction{% endblock %}
+{% block content %}
+
+<div class="main-container">
+  <div class="header-card">
+    <h1>Predict Tumor Stage</h1>
+    <p>Enter tumor characteristics below</p>
+  </div>
+
+  <div class="content-card">
+    <form method="POST" id="stageForm">
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        <label>Tumor Type</label>
+        {{ form.tumor_type(class="form-select") }}
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 form-group">
+          <label>Total Volume (cm³)</label>
+          {{ form.total_volume(class="form-control", placeholder="e.g. 35.2") }}
+        </div>
+        <div class="col-md-6 form-group">
+          <label>Edema Volume (cm³)</label>
+          {{ form.edema_volume(class="form-control", placeholder="e.g. 12.8") }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 form-group">
+          <label>Necrosis Volume (cm³)</label>
+          {{ form.necrosis_volume(class="form-control", placeholder="e.g. 6.7") }}
+        </div>
+        <div class="col-md-6 form-group">
+          <label>Enhancing Volume (cm³)</label>
+          {{ form.enhancing_volume(class="form-control", placeholder="e.g. 15.7") }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 form-group">
+          <label>Centroid X (0–1)</label>
+          {{ form.centroid_x(class="form-control", placeholder="0.5") }}
+        </div>
+        <div class="col-md-4 form-group">
+          <label>Centroid Y (0–1)</label>
+          {{ form.centroid_y(class="form-control", placeholder="0.5") }}
+        </div>
+        <div class="col-md-4 form-group">
+          <label>Centroid Z (0–1)</label>
+          {{ form.centroid_z(class="form-control", placeholder="0.5") }}
+        </div>
+      </div>
+
+       <button type="submit" class="btn btn-predict">Predict Stage</button>
+    </form>
+  </div>
+</div>
+
+{% if result %}
+<!-- Modal must go outside of any container with restricted overflow -->
+<div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resultModalLabel">Stage Prediction Result</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Tumor Type:</strong> {{ form.tumor_type.data.title() }}</p>
+        <p><strong>Predicted Stage:</strong> <span class="text-primary">{{ result.stage }}</span></p>
+        <p><strong>Status Change:</strong> {{ result.status }}</p>
+        <hr>
+        <h6>Expert Recommendations</h6>
+        <p style="white-space: pre-wrap;">{{ result.rec }}</p>
+      </div>
+      <div class="modal-footer">
+        <form method="POST" action="{{ url_for('download_stage_report') }}" id="pdfForm">
+          <input type="hidden" name="tumor_type" value="{{ form.tumor_type.data }}">
+          <input type="hidden" name="stage"      value="{{ result.stage }}">
+          <input type="hidden" name="features"   value='{{ features_json }}'>
+          <input type="hidden" name="rec"        value="{{ result.rec }}">
+          <input type="hidden" name="status"     value="{{ result.status }}">
+          <button type="submit" class="btn btn-outline-secondary" id="downloadBtn">
+            <i class="bi bi-download"></i> Download PDF
+          </button>
+        </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Bootstrap 5: show the modal if result exists
+    var modalEl = document.getElementById('resultModal');
+    var bsModal = new bootstrap.Modal(modalEl);
+    bsModal.show();
+
+    // Close modal when Download PDF is clicked
+    document.getElementById('pdfForm').addEventListener('submit', function() {
+      bsModal.hide();
+    });
+  });
+</script>
+{% endif %}
+
+{% endblock %}

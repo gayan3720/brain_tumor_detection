@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}NeuroScan AI | Tumor Prediction System{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <!-- Bootstrap 5 CSS -->
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-…"
+  crossorigin="anonymous"
+/>
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --light-bg: #f0f7ff;
+      --dark-text: #2b2d42;
+      --light-text: #6c757d;
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f0f7ff 0%, #e6f4ff 100%);
+      min-height: 100vh;
+      color: var(--dark-text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Header Styling */
+    header {
+      background: linear-gradient(120deg, var(--primary), var(--secondary));
+      padding: 1.2rem 2rem;
+      color: white;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+      position: relative;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      font-size: 1.8rem;
+      background: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+
+    .logo-text {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    nav a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      padding: 0.5rem 0;
+      position: relative;
+    }
+
+    nav a:hover {
+      color: white;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: white;
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    nav a i {
+      font-size: 1.2rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      font-weight: 500;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Main Content Area */
+    main {
+      flex: 1;
+      padding: 2rem 2rem 4rem;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Footer Styling */
+    footer {
+      background: linear-gradient(120deg, var(--primary), var(--secondary));
+      color: rgba(255, 255, 255, 0.85);
+      padding: 1.8rem 2rem;
+      margin-top: auto;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .copyright {
+      font-weight: 500;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: white;
+    }
+
+    /* Back Button */
+    .back-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(120deg, var(--primary), var(--secondary));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+      z-index: 90;
+      transition: var(--transition);
+      text-decoration: none;
+      font-size: 1.4rem;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 25px rgba(67, 97, 238, 0.5);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      nav {
+        gap: 1.5rem;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem;
+      }
+
+      .logo-text {
+        font-size: 1.4rem;
+      }
+
+      nav {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      nav a {
+        font-size: 0.95rem;
+      }
+
+      main {
+        padding: 1.5rem 1rem 3rem;
+      }
+
+      footer {
+        padding: 1.5rem 1rem;
+      }
+
+      .back-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo-text {
+        font-size: 1.3rem;
+      }
+
+      nav {
+        gap: 0.8rem;
+      }
+
+      nav a span {
+        display: none;
+      }
+
+      nav a i {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    {% set hide_header_footer = request.endpoint in ['login', 'register'] %}
+
+    {% if current_user.is_authenticated and not hide_header_footer %}
+    <header>
+      <div class="header-content">
+        <a href="{{ url_for('tumor_predict') }}" class="logo">
+          <div class="logo-icon">
+            <i class="bi bi-heart-pulse"></i>
+          </div>
+          <div class="logo-text">NeuroScan AI</div>
+        </a>
+
+        <nav>
+          <a href="{{ url_for('tumor_predict') }}">
+            <i class="bi bi-house-door"></i>
+            <span>Home</span>
+          </a>
+          <a href="{{ url_for('stage_predict') }}">
+            <i class="bi bi-clipboard2-pulse"></i>
+            <span>Stage Prediction</span>
+          </a>
+          <a href="#">
+            <i class="bi bi-file-earmark-medical"></i>
+            <span>History</span>
+          </a>
+          <a href="#">
+            <i class="bi bi-question-circle"></i>
+            <span>Help</span>
+          </a>
+        </nav>
+
+        <div class="user-info">
+          <div class="user-avatar">
+            <i class="bi bi-person"></i>
+          </div>
+          <div>{{ current_user.username }}</div>
+        </div>
+      </div>
+    </header>
+    {% endif %}
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+    {% if current_user.is_authenticated and not hide_header_footer %}
+    <footer>
+      <div class="footer-content">
+        <div class="copyright">© 2025 NeuroScan AI | Medical-grade tumor detection technology</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Us</a>
+        </div>
+      </div>
+    </footer>
+
+    <a href="#" onclick="window.history.back(); return false;" class="back-btn" aria-label="Back">&#8592;</a>
+    {% endif %}
+  </div>
+
+  <script>
+    // Simple animation for page transitions
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.classList.add('loaded');
+
+      // Add active state to current nav link
+      const currentPath = window.location.pathname;
+      const navLinks = document.querySelectorAll('nav a');
+
+      navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+          link.style.color = 'white';
+          link.style.fontWeight = '600';
+          if (link.querySelector('span')) {
+            link.querySelector('span').style.textShadow = '0 0 8px rgba(255,255,255,0.5)';
+          }
+        }
+      });
+    });
+  </script>
+<!-- Bootstrap 5 JS Bundle (includes Popper) -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-…"
+  crossorigin="anonymous"
+></script>
+</body>
+</html>

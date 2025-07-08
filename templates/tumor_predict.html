@@ -1,0 +1,751 @@
+{% extends "base.html" %}
+{% block title %}Tumor Prediction{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-dark: #3a56d4;
+        --secondary: #7209b7;
+        --success: #06d6a0;
+        --warning: #ffd166;
+        --danger: #ef476f;
+        --light-bg: #f8f9fa;
+        --dark-text: #2b2d42;
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    body {
+        background: linear-gradient(135deg, #f0f7ff 0%, #e6f4ff 100%);
+        min-height: 100vh;
+        color: var(--dark-text);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+    }
+
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    .header-card {
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
+        border-radius: 18px;
+        padding: 2rem 2.5rem;
+        color: white;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        text-align: center;
+    }
+
+    .header-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+        transform: rotate(30deg);
+        z-index: -1;
+    }
+
+    .header-card h1 {
+        font-weight: 800;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    .header-card p {
+        font-weight: 400;
+        opacity: 0.9;
+        margin-bottom: 0;
+        font-size: 1.15rem;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .content-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+    }
+
+    @media (max-width: 992px) {
+        .content-wrapper {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .content-card {
+        background: white;
+        border-radius: 18px;
+        padding: 2.5rem;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .content-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1.8rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid rgba(67, 97, 238, 0.15);
+        display: flex;
+        align-items: center;
+        font-size: 1.4rem;
+    }
+
+    .section-title i {
+        margin-right: 12px;
+        font-size: 1.8rem;
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .upload-container {
+        border: 2px dashed var(--primary);
+        border-radius: 15px;
+        padding: 2.5rem 1.5rem;
+        text-align: center;
+        background: #f8fbff;
+        transition: var(--transition);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .upload-container:hover {
+        background: #e8f4ff;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(58, 134, 255, 0.15);
+        border-color: var(--primary-dark);
+    }
+
+    .upload-icon {
+        font-size: 3.5rem;
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .upload-container:hover .upload-icon {
+        transform: scale(1.1);
+    }
+
+    .upload-text {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark-text);
+    }
+
+    .upload-subtext {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-bottom: 1.2rem;
+    }
+
+    #file-name {
+        font-size: 0.95rem;
+        color: #495057;
+        margin-top: 1.2rem;
+        word-break: break-word;
+        background: #f1f8ff;
+        padding: 0.75rem 1.2rem;
+        border-radius: 12px;
+        font-weight: 500;
+        transition: var(--transition);
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #image_preview {
+        max-width: 100%;
+        max-height: 280px;
+        margin: 2rem auto 0;
+        display: none;
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+        animation: fade-in 0.4s ease;
+        object-fit: contain;
+    }
+
+    .btn-predict {
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 1rem 3.5rem;
+        border: none;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.35);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        width: 100%;
+        margin-top: 1.5rem;
+    }
+
+    .btn-predict::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        background: linear-gradient(120deg, var(--primary-dark), #5e0ca1);
+        transition: width 0.6s ease;
+        z-index: -1;
+    }
+
+    .btn-predict:hover::before {
+        width: 100%;
+    }
+
+    .btn-predict:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(67, 97, 238, 0.45);
+    }
+
+    .btn-predict:active {
+        transform: translateY(1px);
+    }
+
+    .btn-predict i {
+        margin-right: 10px;
+        font-size: 1.3rem;
+    }
+
+    .spinner-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.92);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        border-radius: 18px;
+        backdrop-filter: blur(8px);
+        flex-direction: column;
+    }
+
+    .spinner-text {
+        margin-top: 1.5rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .result-card {
+        padding: 2.2rem;
+        background: linear-gradient(to bottom, #ffffff, #f8faff);
+        border-radius: 18px;
+        animation: fade-in 0.6s ease;
+        box-shadow: var(--card-shadow);
+        border-left: 5px solid var(--primary);
+    }
+
+    .result-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.8rem;
+    }
+
+    .result-icon {
+        font-size: 2.5rem;
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-right: 15px;
+    }
+
+    .result-content p {
+        margin-bottom: 1.2rem;
+        font-size: 1.15rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .result-label {
+        font-weight: 700;
+        color: var(--dark-text);
+        min-width: 150px;
+        display: inline-block;
+    }
+
+    .result-value {
+        font-weight: 600;
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .confidence-meter {
+        height: 16px;
+        background: #e9ecef;
+        border-radius: 10px;
+        margin: 1.2rem 0 1.8rem;
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.08);
+    }
+
+    .confidence-fill {
+        height: 100%;
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        border-radius: 10px;
+        transition: width 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+
+    .btn-next {
+        background: linear-gradient(120deg, var(--success), #0dc9a9);
+        color: white;
+        padding: 0.9rem 2.5rem;
+        border: none;
+        border-radius: 14px;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 8px 20px rgba(6, 214, 160, 0.35);
+        transition: var(--transition);
+    }
+
+    .btn-next:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(6, 214, 160, 0.45);
+    }
+
+    .btn-next i {
+        margin-left: 10px;
+        transition: transform 0.3s ease;
+    }
+
+    .btn-next:hover i {
+        transform: translateX(5px);
+    }
+
+    .info-section {
+        background: linear-gradient(to bottom, #f8f9fa, #f1f8ff);
+        border-radius: 18px;
+        padding: 2rem;
+        border: 1px solid rgba(67, 97, 238, 0.1);
+        margin-top: 2.5rem;
+        grid-column: 1 / -1;
+    }
+
+    .info-title {
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1.8rem;
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+    }
+
+    .info-title i {
+        margin-right: 12px;
+        font-size: 1.8rem;
+    }
+
+    .info-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .info-box {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem 1.8rem;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        border-top: 4px solid var(--primary);
+        text-align: center;
+    }
+
+    .info-box:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .info-box h5 {
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+
+    .info-box p {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-bottom: 0;
+        line-height: 1.7;
+    }
+
+    .info-icon {
+        font-size: 2.5rem;
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+    }
+
+    .footer {
+        text-align: center;
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-top: 3rem;
+        padding: 1.5rem;
+        grid-column: 1 / -1;
+    }
+
+    .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+
+    .status-ready {
+        background-color: var(--success);
+    }
+
+    .status-processing {
+        background-color: var(--warning);
+        animation: pulse 1.5s infinite;
+    }
+
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+
+    .no-tumor-card {
+        background: linear-gradient(135deg, #f0fff4, #dcfce7);
+        border-radius: 18px;
+        padding: 3rem 2rem;
+        text-align: center;
+        animation: fade-in 0.6s ease;
+        box-shadow: var(--card-shadow);
+        border: 2px solid #06d6a0;
+    }
+
+    .celebration-icon {
+        font-size: 5rem;
+        color: #06d6a0;
+        margin-bottom: 1.5rem;
+        animation: pulse 2s infinite;
+    }
+
+    .celebration-title {
+        font-weight: 700;
+        color: #065f46;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+
+    .celebration-text {
+        font-size: 1.2rem;
+        color: #047857;
+        margin-bottom: 1.5rem;
+    }
+
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(25px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(6, 214, 160, 0.4);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 15px rgba(6, 214, 160, 0);
+        }
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(6, 214, 160, 0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1.5rem 1rem;
+        }
+
+        .header-card {
+            padding: 1.5rem;
+            border-radius: 16px;
+        }
+
+        .header-card h1 {
+            font-size: 2rem;
+        }
+
+        .content-card {
+            padding: 1.8rem;
+            border-radius: 16px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+        }
+
+        .upload-container {
+            padding: 1.8rem 1rem;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+        }
+
+        .btn-predict {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+
+        .celebration-icon {
+            font-size: 4rem;
+        }
+
+        .celebration-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<div class="main-container">
+    <!-- Header -->
+    <div class="header-card pulse">
+        <h1>AI-Powered Brain Tumor Detection</h1>
+        <p>Upload your MRI scan for instant analysis and classification using our advanced deep learning model</p>
+    </div>
+
+    <div class="content-wrapper">
+        <!-- Upload Section -->
+        <div class="content-card">
+            <div class="spinner-container" id="loadingSpinner">
+                <div class="spinner-border" style="width: 4rem; height: 4rem; color: var(--primary)" role="status"></div>
+                <div class="spinner-text">Processing your MRI scan...</div>
+            </div>
+
+            <h3 class="section-title">
+                <i class="bi bi-cloud-arrow-up"></i>
+                Upload MRI Scan
+            </h3>
+
+            <form method="POST" enctype="multipart/form-data" onsubmit="showSpinner()">
+                {{ form.hidden_tag() }}
+
+                <label for="scan" class="upload-container">
+                    <div class="upload-icon">
+                        <i class="bi bi-file-earmark-medical"></i>
+                    </div>
+                    <h4 class="upload-text">Upload MRI Scan Image</h4>
+                    <p class="upload-subtext">Click to browse or drag & drop your file here</p>
+                    <p class="text-muted mb-0">Supported formats: JPG, PNG, DICOM (Max 10MB)</p>
+                </label>
+                {{ form.scan(class="d-none", id="scan", onchange="handleFileChange(event)") }}
+                <div id="file-name">No file selected</div>
+
+                <!-- Image Preview -->
+                <div class="text-center mt-4">
+                    <img id="image_preview" src="#" alt="MRI Scan Preview">
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center">
+                    <button type="submit" class="btn btn-predict">
+                        <i class="bi bi-cpu"></i> Analyze MRI Scan
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div class="content-card">
+            <h3 class="section-title">
+                <i class="bi bi-clipboard2-pulse"></i>
+                Analysis Results
+            </h3>
+
+            {% if prediction %}
+                {% if prediction.tumor_type == 'no-tumor' %}
+                <!-- No Tumor Celebration Card -->
+                <div class="no-tumor-card">
+                    <div class="celebration-icon">
+                        <i class="bi bi-emoji-smile"></i>
+                    </div>
+                    <h2 class="celebration-title">Congratulations!</h2>
+                    <p class="celebration-text">No tumor detected. Your brain appears healthy.</p>
+                    <p>Continue to monitor your health with regular check-ups.</p>
+                </div>
+                {% else %}
+                <!-- Tumor Detected Result Card -->
+                <div class="result-card" id="resultSection">
+                    <div class="result-header">
+                        <i class="bi bi-clipboard2-check-fill result-icon"></i>
+                        <h3>Prediction Result</h3>
+                    </div>
+                    <div class="result-content">
+                        <p>
+                            <span class="result-label">Tumor Type:</span>
+                            <span class="result-value">{{ prediction.tumor_type }}</span>
+                        </p>
+                        <p>
+                            <span class="result-label">Confidence Level:</span>
+                            <span class="result-value">{{ prediction.confidence|float|round(2) }}%</span>
+                        </p>
+                        <div class="confidence-meter">
+                            <div class="confidence-fill" id="confidenceMeter" style="width: {{ prediction.confidence|float|round(2) }}%"></div>
+                        </div>
+                        <p>
+                            <span class="result-label">Recommendation:</span>
+                            Further evaluation recommended
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Stage Prediction Button -->
+                <div class="mt-4 d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('stage_predict') }}" class="btn btn-next">
+                        Predict Tumor Stage <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+            {% else %}
+            <!-- Default State - No Result Yet -->
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="bi bi-clipboard2-check" style="font-size: 4rem; color: #e9ecef;"></i>
+                </div>
+                <h4 class="text-muted mb-3">Analysis Results Will Appear Here</h4>
+                <p class="text-muted">Upload and analyze an MRI scan to see the tumor prediction results</p>
+                <div class="d-flex align-items-center justify-content-center mt-3">
+                    <span class="status-indicator status-ready"></span>
+                    <span>Ready for analysis</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Information Section -->
+    <div class="info-section">
+        <h4 class="info-title">
+            <i class="bi bi-info-circle"></i>
+            Understanding Tumor Detection
+        </h4>
+        <div class="info-content">
+            <div class="info-box">
+                <div class="info-icon">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
+                <h5>Early Detection Saves Lives</h5>
+                <p>Identifying tumors at an early stage significantly improves treatment outcomes and survival rates by up to 70%.</p>
+            </div>
+            <div class="info-box">
+                <div class="info-icon">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <h5>Advanced AI Technology</h5>
+                <p>Our deep learning model analyzes MRI scans with 96.5% accuracy using state-of-the-art convolutional neural networks.</p>
+            </div>
+            <div class="info-box">
+                <div class="info-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h5>Secure & Private</h5>
+                <p>All medical data is encrypted, HIPAA-compliant, and never stored or shared with third parties.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 NeuroScan AI | Medical-grade tumor detection technology</p>
+    </div>
+</div>
+
+<script>
+    function handleFileChange(event) {
+        const fileInput = event.target;
+        const file = fileInput.files[0];
+        const fileNameDiv = document.getElementById('file-name');
+
+        if (file) {
+            fileNameDiv.innerHTML = `<i class="bi bi-file-earmark-medical me-2"></i> ${file.name}`;
+            fileNameDiv.style.background = "#e6f7ff";
+            fileNameDiv.style.border = "1px solid #b3e0ff";
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const preview = document.getElementById('image_preview');
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            fileNameDiv.textContent = "No file selected";
+            fileNameDiv.style.background = "#f8f9fa";
+            fileNameDiv.style.border = "1px solid #e9ecef";
+            document.getElementById('image_preview').style.display = 'none';
+        }
+    }
+
+    function showSpinner() {
+        const fileInput = document.getElementById('scan');
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert("Please select an MRI scan first");
+            return false;
+        }
+
+        document.getElementById('loadingSpinner').style.display = 'flex';
+        return true;
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hide the spinner initially
+        document.getElementById('loadingSpinner').style.display = 'none';
+
+        // If there's a prediction result and it's a tumor, animate the confidence meter
+        {% if prediction and prediction.tumor_type != 'no-tumor' %}
+            const meter = document.getElementById('confidenceMeter');
+            // Reset width to 0 and then animate to the actual value
+            meter.style.width = '0';
+            setTimeout(() => {
+                meter.style.width = '{{ prediction.confidence|float|round(2) }}%';
+            }, 300);
+        {% endif %}
+    });
+</script>
+{% endblock %}

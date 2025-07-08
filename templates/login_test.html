@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login Floating Label Test</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f9f9f9;
+    padding: 50px;
+  }
+  .login-container {
+    max-width: 400px;
+    margin: auto;
+    background: white;
+    padding: 40px 30px 50px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  h2 {
+    color: #004080;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  .form-group {
+    position: relative;
+    margin-bottom: 35px;
+  }
+  input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    background: transparent;
+    outline: none;
+  }
+  input:focus {
+    border-bottom-color: #004080;
+  }
+  label {
+    position: absolute;
+    left: 12px;
+    top: 14px;
+    color: #999;
+    font-size: 16px;
+    pointer-events: none;
+    transition: 0.3s ease all;
+  }
+  input:focus ~ label,
+  input:not(:placeholder-shown) ~ label {
+    top: -10px;
+    font-size: 12px;
+    color: #004080;
+    font-weight: 700;
+  }
+  .underline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background: #ccc;
+  }
+  input:focus ~ .underline {
+    background: linear-gradient(90deg, #004080, #1e90ff);
+    animation: underlineGrow 0.4s forwards;
+  }
+  @keyframes underlineGrow {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+  button {
+    width: 100%;
+    background-color: #004080;
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #003366;
+  }
+  p.register-text {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #555;
+  }
+  p.register-text a {
+    color: #004080;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  p.register-text a:hover {
+    color: #1e90ff;
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+<div class="login-container">
+  <h2>Login</h2>
+  <form>
+    <div class="form-group">
+      <input id="username" name="username" type="text" placeholder=" " required />
+      <label for="username">Username</label>
+      <span class="underline"></span>
+    </div>
+    <div class="form-group">
+      <input id="password" name="password" type="password" placeholder=" " required />
+      <label for="password">Password</label>
+      <span class="underline"></span>
+    </div>
+    <button type="submit">Login</button>
+  </form>
+  <p class="register-text">Don't have an account? <a href="#">Register here</a>.</p>
+</div>
+</body>
+</html>

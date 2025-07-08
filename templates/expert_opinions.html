@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Expert Opinions{% endblock %}
+{% block content %}
+<h2>Expert Opinions for {{ tumor_type }} - {{ stage }}</h2>
+
+{% if scan_path %}
+  <img src="{{ url_for('static', filename=scan_path.split('/')[-1]) }}" alt="Tumor Scan" style="max-width:400px;">
+{% endif %}
+
+<div>
+  <h3>Treatment</h3>
+  <p>{{ instructions.treatment }}</p>
+
+  <h3>Follow-up</h3>
+  <p>{{ instructions.follow_up }}</p>
+
+  <h3>Lifestyle</h3>
+  <p>{{ instructions.lifestyle }}</p>
+
+  <h3>Warning Signs</h3>
+  <p>{{ instructions.warning_signs }}</p>
+
+  <h3>Referral</h3>
+  <p>{{ instructions.referral }}</p>
+</div>
+
+<p><a href="{{ url_for('download_report') }}">Download this page as PDF</a></p>
+{% endblock %}
